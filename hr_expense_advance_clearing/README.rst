@@ -38,12 +38,11 @@ first, then back to company and do the clearing.
 
 There can be 3 scenarios for advance and clearing
 
--  When clearing amount = advance amount, no other operation is
-   required.
--  When clearing amount > advance amount, company will pay the extra to
-   employee.
--  When clearing amount < advance amount, employee will return the
-   remain to company.
+- When clearing amount = advance amount, no other operation is required.
+- When clearing amount > advance amount, company will pay the extra to
+  employee.
+- When clearing amount < advance amount, employee will return the remain
+  to company.
 
 **Table of contents**
 
@@ -57,16 +56,16 @@ This module will create a new product "Employee Advance" automatically.
 You will need to setup the Expense Account of this product to your
 Employee Advance account manually.
 
--  Open Product window and search for "Employee Advance"
--  On Accounting tab, select appropriate employee advance account from
-   your chart of account
+- Open Product window and search for "Employee Advance"
+- On Accounting tab, select appropriate employee advance account from
+  your chart of account
 
 Note:
 
--  You will need the "Show Full Accounting Features" to see accounting
-   data
--  Employee Advance account code, if not already exists, you can create
-   one. Use type = Current Asset and check Allow Reconciliation.
+- You will need the "Show Full Accounting Features" to see accounting
+  data
+- Employee Advance account code, if not already exists, you can create
+  one. Use type = Current Asset and check Allow Reconciliation.
 
 Usage
 =====
@@ -114,10 +113,10 @@ you can do 2 ways,
 
 Note:
 
--  If the total expense amount less than or equal to the advance amount,
-   the status will be set to Paid right after post journal entries.
--  If the total expense amount more than the advance amount, Register
-   Payment will pay the extra amount then set state to Paid.
+- If the total expense amount less than or equal to the advance amount,
+  the status will be set to Paid right after post journal entries.
+- If the total expense amount more than the advance amount, Register
+  Payment will pay the extra amount then set state to Paid.
 
 **Return Advance**
 
@@ -152,9 +151,9 @@ Authors
 Contributors
 ------------
 
--  Kitti Upariphutthiphong <kittiu@ecosoft.co.th>
--  Tharathip Chaweewongphan <tharathipc@ecosoft.co.th>
--  Saran Lim. <saranl@ecosoft.co.th>
+- Kitti Upariphutthiphong <kittiu@ecosoft.co.th>
+- Tharathip Chaweewongphan <tharathipc@ecosoft.co.th>
+- Saran Lim. <saranl@ecosoft.co.th>
 
 Maintainers
 -----------
