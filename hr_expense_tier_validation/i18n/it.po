@@ -42,6 +42,16 @@ msgid "Has Comment"
 msgstr "Ha commenti"
 
 #. module: hr_expense_tier_validation
+#: model:ir.model.fields,field_description:hr_expense_tier_validation.field_hr_expense_sheet__hide_reviews
+msgid "Hide Reviews"
+msgstr ""
+
+#. module: hr_expense_tier_validation
+#: model:ir.model.fields,help:hr_expense_tier_validation.field_hr_expense_sheet__has_comment
+msgid "If set, Allow the reviewer to leave a comment on the review."
+msgstr ""
+
+#. module: hr_expense_tier_validation
 #: model_terms:ir.ui.view,arch_db:hr_expense_tier_validation.hr_expense_sheet_view_search
 msgid "My Expense report to review"
 msgstr "La mia nota spese da revisionare"
