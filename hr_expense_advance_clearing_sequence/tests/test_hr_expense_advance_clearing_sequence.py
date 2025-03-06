@@ -1,10 +1,12 @@
 # Copyright 2019 Ecosoft Co., Ltd (http://ecosoft.co.th/)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
 
-from odoo.tests.common import Form, TransactionCase
+from odoo import Command
+
+from odoo.addons.base.tests.common import BaseCommon
 
 
-class TestHrExpenseAdvanceClearingSequence(TransactionCase):
+class TestHrExpenseAdvanceClearingSequence(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -12,7 +14,6 @@ class TestHrExpenseAdvanceClearingSequence(TransactionCase):
         cls.expense_sheet_model = cls.env["hr.expense.sheet"]
         cls.partner_1 = cls.env.ref("base.res_partner_12")
         cls.employee_1 = cls.env.ref("hr.employee_hne")
-        cls.employee_1.address_home_id = cls.partner_1.id
         account_expense = cls.env["account.account"].create(
             {
                 "code": "NC1113",
@@ -39,14 +40,20 @@ class TestHrExpenseAdvanceClearingSequence(TransactionCase):
         advance=False,
         payment_mode="own_account",
     ):
-        with Form(
-            self.env["hr.expense"].with_context(default_advance=advance)
-        ) as expense:
-            expense.name = description
-            expense.employee_id = employee
-            expense.total_amount = amount
-            expense.payment_mode = payment_mode
-        expense = expense.save()
+        expense = (
+            self.env["hr.expense"]
+            .with_context(default_advance=advance)
+            .create(
+                {
+                    "name": description,
+                    "employee_id": employee.id,
+                    "product_id": product.id,
+                    "quantity": 1.0,
+                    "price_unit": amount,
+                    "payment_mode": payment_mode,
+                }
+            )
+        )
         expense.tax_ids = False  # Test no vat
         return expense
 
@@ -74,7 +81,7 @@ class TestHrExpenseAdvanceClearingSequence(TransactionCase):
                 "name": "Advance 1,000",
                 "advance": True,
                 "employee_id": self.expense.employee_id.id,
-                "expense_line_ids": [[4, self.expense.id, False]],
+                "expense_line_ids": [Command.link(self.expense.id)],
             }
         )
         self.assertNotEqual(advance_sheet.number, "/", "Number create")
