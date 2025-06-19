@@ -61,7 +61,7 @@ class AccountMove(models.Model):
                     max_amount = limit - balance
                     amount = sum(
                         rec.invoice_line_ids.filtered(
-                            lambda l: l.account_id == account
+                            lambda line, acc=account: line.account_id == acc
                         ).mapped("price_subtotal")
                     )
                     company_currency = rec.company_id.currency_id
@@ -83,9 +83,9 @@ class AccountMove(models.Model):
                                 "Petty Cash balance is {balance} {symbol}.\n"
                                 "Max amount to add is {max_amount} {symbol}."
                             ).format(
-                                balance="{:,.2f}".format(balance),
+                                balance=f"{balance:,.2f}",
                                 symbol=company_currency.symbol,
-                                max_amount="{:,.2f}".format(max_amount),
+                                max_amount=f"{max_amount:,.2f}",
                             )
                         )
 

@@ -39,7 +39,8 @@ class HrExpense(models.Model):
             if len(self.mapped("employee_id")) != 1:
                 raise UserError(
                     _(
-                        "You cannot report expenses for different employees in the same report."
+                        "You cannot report expenses for different employees in"
+                        " the same report."
                     )
                 )
             if any(not expense.product_id for expense in self):
@@ -51,9 +52,7 @@ class HrExpense(models.Model):
                 min_date = format_date(self.env, min(dates))
                 max_date = format_date(self.env, max(dates))
                 expense_name = (
-                    min_date
-                    if max_date == min_date
-                    else "%s - %s" % (min_date, max_date)
+                    min_date if max_date == min_date else f"{min_date} - {max_date}"
                 )
             # check expense petty cash can't create holder more than 1
             if len(petty_cash.petty_cash_id) != 1:

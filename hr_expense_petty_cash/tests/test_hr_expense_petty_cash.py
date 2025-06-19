@@ -8,7 +8,7 @@ from odoo.tests.common import Form, TransactionCase
 
 class TestHrExpensePettyCash(TransactionCase):
     def setUp(self):
-        super(TestHrExpensePettyCash, self).setUp()
+        super().setUp()
 
         self.employee_1 = self.env.ref("hr.employee_admin")
         self.employee_2 = self.env.ref("hr.employee_al")

@@ -59,8 +59,8 @@ class HrExpenseSheet(models.Model):
                             "You are requesting {amount_company}{symbol}, "
                             "but the balance is {balance}{symbol}."
                         ).format(
-                            amount_company="{:,.2f}".format(amount_company),
+                            amount_company=f"{amount_company:,.2f}",
                             symbol=company_currency.symbol,
-                            balance="{:,.2f}".format(balance),
+                            balance=f"{balance:,.2f}",
                         )
                     )
