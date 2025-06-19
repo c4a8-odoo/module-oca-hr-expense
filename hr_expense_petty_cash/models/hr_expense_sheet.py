@@ -1,9 +1,10 @@
 # Copyright 2019 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import float_compare
+from odoo.tools.misc import clean_context
 
 
 class HrExpenseSheet(models.Model):
@@ -34,7 +35,9 @@ class HrExpenseSheet(models.Model):
                         rec.journal_id = journal_petty_cash
                 else:
                     raise ValidationError(
-                        _("You cannot create report from many petty cash holders.")
+                        self.env._(
+                            "You cannot create report from many petty cash holders."
+                        )
                     )
 
     @api.constrains("expense_line_ids", "total_amount")
@@ -54,7 +57,7 @@ class HrExpenseSheet(models.Model):
                 prec = rec.currency_id.rounding
                 if float_compare(amount_company, balance, precision_rounding=prec) == 1:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Not enough money in petty cash holder.\n"
                             "You are requesting {amount_company}{symbol}, "
                             "but the balance is {balance}{symbol}."
@@ -64,3 +67,101 @@ class HrExpenseSheet(models.Model):
                             balance=f"{balance:,.2f}",
                         )
                     )
+
+    def _do_create_moves(self):
+        petty_cash_account_sheets = self.filtered(
+            lambda sheet: sheet.payment_mode == "petty_cash"
+        )
+        self_without_petty_cash = self - petty_cash_account_sheets
+        if petty_cash_account_sheets:
+            self = self.with_context(
+                **clean_context(self.env.context)
+            )  # remove default_*
+            moves = self.env["account.move"].create(
+                [sheet._prepare_bills_vals() for sheet in petty_cash_account_sheets]
+            )
+            moves.action_post()
+            self.activity_update()
+            return moves
+        return super(HrExpenseSheet, self_without_petty_cash)._do_create_moves()
+
+    def action_open_account_moves(self):
+        self.ensure_one()
+        if self.payment_mode == "petty_cash":
+            record_ids = self.account_move_ids
+            action = {"type": "ir.actions.act_window", "res_model": "account.move"}
+            if len(self.account_move_ids) == 1:
+                action.update(
+                    {
+                        "name": record_ids.name,
+                        "view_mode": "form",
+                        "res_id": record_ids.id,
+                        "views": [(False, "form")],
+                    }
+                )
+            else:
+                action.update(
+                    {
+                        "name": _("Journal entries"),
+                        "view_mode": "list",
+                        "domain": [("id", "in", record_ids.ids)],
+                        "views": [(False, "list"), (False, "form")],
+                    }
+                )
+            return action
+        return super().action_open_account_moves()
+
+    def _get_petty_cash_move_line_vals(self):
+        self.ensure_one()
+        move_line_vals = []
+        for expense in self.expense_line_ids:
+            move_line_name = (
+                expense.employee_id.name + ": " + expense.name.split("\n")[0][:64]
+            )
+            partner_id = expense.employee_id.sudo().work_contact_id.id
+            # source move line
+            move_line_src = expense._get_petty_cash_move_line(
+                move_line_name,
+                partner_id,
+                expense.total_amount,
+                expense.total_amount_currency,
+                expense.tax_ids,
+            )
+            move_line_values = [move_line_src]
+
+            # destination move line
+            move_line_dst = expense._get_petty_cash_move_line(
+                move_line_name,
+                expense.petty_cash_id.partner_id.id,
+                -expense.total_amount,
+                -expense.total_amount_currency,
+                expense.tax_ids,
+                expense.petty_cash_id.account_id,
+            )
+            move_line_values.append(move_line_dst)
+            move_line_vals.extend(move_line_values)
+        return move_line_vals
+
+    def _prepare_bills_vals(self):
+        """create journal entry instead of bills when clearing document"""
+        self.ensure_one()
+        res = super()._prepare_bills_vals()
+        if self.payment_mode == "petty_cash":
+            move_line_vals = self._get_petty_cash_move_line_vals()
+            res.update(
+                {
+                    "partner_id": False,
+                    "commercial_partner_id": False,
+                    "move_type": "entry",
+                    "line_ids": [Command.create(x) for x in move_line_vals],
+                }
+            )
+        return res
+
+    def action_sheet_move_post(self):
+        res = super().action_sheet_move_post()
+        paid_petty_cash = self.filtered(lambda m: m.payment_mode == "petty_cash")
+        paid_petty_cash.write(
+            {"state": "done", "amount_residual": 0.0, "payment_state": "paid"}
+        )
+        return res

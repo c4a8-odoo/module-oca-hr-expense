@@ -1,7 +1,7 @@
 # Copyright 2019 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 
@@ -9,11 +9,7 @@ from odoo.tools import float_compare
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    is_petty_cash = fields.Boolean(
-        string="Petty Cash",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
-    )
+    is_petty_cash = fields.Boolean(string="Petty Cash")
 
     def action_post(self):
         self._check_petty_cash_amount()
@@ -38,30 +34,32 @@ class AccountMove(models.Model):
                     and account.id in rec.invoice_line_ids.mapped("account_id").ids
                 ):
                     raise UserError(
-                        _("Please check Petty Cash on {name}.").format(
+                        self.env._("Please check Petty Cash on {name}.").format(
                             name=rec.display_name
                         )
                     )
                 if rec.is_petty_cash:
                     if len(rec.invoice_line_ids) > 1:
                         raise UserError(
-                            _(
+                            self.env._(
                                 "{name} with petty cash checked must contain "
                                 "only 1 line."
                             ).format(name=rec.display_name)
                         )
                     if rec.invoice_line_ids.account_id.id != account.id:
                         raise UserError(
-                            _("Account on invoice line should be {name}.").format(
-                                name=account.display_name
-                            )
+                            self.env._(
+                                "Account on invoice line should be {name}."
+                            ).format(name=account.display_name)
                         )
                     balance = petty_cash.petty_cash_balance
                     limit = petty_cash.petty_cash_limit
                     max_amount = limit - balance
                     amount = sum(
                         rec.invoice_line_ids.filtered(
-                            lambda line, acc=account: line.account_id == acc
+                            lambda inv_line, _account=account: (
+                                inv_line.account_id == _account
+                            )
                         ).mapped("price_subtotal")
                     )
                     company_currency = rec.company_id.currency_id
@@ -79,7 +77,7 @@ class AccountMove(models.Model):
                         == 1
                     ):
                         raise ValidationError(
-                            _(
+                            self.env._(
                                 "Petty Cash balance is {balance} {symbol}.\n"
                                 "Max amount to add is {max_amount} {symbol}."
                             ).format(
@@ -108,6 +106,7 @@ class AccountMove(models.Model):
                 "partner_id": petty_cash.partner_id.id,
                 "price_unit": amount_doc_currency,
                 "quantity": 1,
+                "tax_ids": [],  # no tax need
             }
         )
         return inv_line
@@ -118,7 +117,7 @@ class AccountMove(models.Model):
         self.invoice_line_ids = False
         if self.is_petty_cash:
             if not self.partner_id:
-                raise ValidationError(_("Please select petty cash holder"))
+                raise ValidationError(self.env._("Please select petty cash holder"))
             # Selected partner must be petty cash holder
             petty_cash = self.env["petty.cash"].search(
                 [
@@ -129,12 +128,10 @@ class AccountMove(models.Model):
             )
             if not petty_cash:
                 raise ValidationError(
-                    _("%s is not a petty cash holder") % self.partner_id.name
+                    self.env._("%s is not a petty cash holder") % self.partner_id.name
                 )
             self.invoice_line_ids = self._add_petty_cash_invoice_line(petty_cash)
-            self._onchange_invoice_line_ids()
-            self.line_ids._onchange_price_subtotal()
-            self._onchange_recompute_dynamic_lines()
+
             if petty_cash.journal_id:
                 # Prevent inconsistent journal_id
                 if (

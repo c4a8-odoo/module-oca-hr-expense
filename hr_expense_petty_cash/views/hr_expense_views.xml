@@ -6,10 +6,11 @@
         <field name="inherit_id" ref="hr_expense.hr_expense_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_mode']" position="after">
-                <div attrs="{'invisible': [('payment_mode', '!=', 'petty_cash')]}">
+                <div invisible="payment_mode != 'petty_cash'">
                     <field
                         name="petty_cash_id"
-                        attrs="{'required': [('payment_mode', '=', 'petty_cash')]}"
+                        required="payment_mode == 'petty_cash'"
+                        readonly="state != 'draft'"
                         class="oe_inline"
                     />
                 </div>

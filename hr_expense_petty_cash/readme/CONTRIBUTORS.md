@@ -3,3 +3,5 @@
   - Saran Lim. \<saranl@ecosoft.co.th\>
 - [Trinityroots](http://trinityroots.co.th):
   - Santi Techatoo \<santi.tec@trinityroots.co.th\>
+- [Heliconia Solutions Pvt. Ltd.](https://www.heliconia.io)
+  - Bhavesh Heliconia
