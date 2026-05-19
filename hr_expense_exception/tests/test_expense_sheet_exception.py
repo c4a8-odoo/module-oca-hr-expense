@@ -8,7 +8,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class TestExpenseSheetException(TransactionCase):
     def setUp(self):
-        super(TestExpenseSheetException, self).setUp()
+        super().setUp()
         # Useful models
         self.ExpenseSheet = self.env["hr.expense.sheet"]
         self.ExpenseSheetLine = self.env["hr.expense"]
