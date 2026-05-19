@@ -14,7 +14,7 @@ class ExpenseSheetExceptionConfirm(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         if self.ignore:
-            self.related_model_id.reset_expense_sheets()
+            self.related_model_id.action_reset_expense_sheets()
             self.related_model_id.ignore_exception = True
             self.related_model_id.action_submit_sheet()
         return super().action_confirm()

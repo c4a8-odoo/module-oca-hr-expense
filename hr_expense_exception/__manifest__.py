@@ -4,7 +4,7 @@
 {
     "name": "Expense Exception",
     "summary": "Custom exceptions on expense report",
-    "version": "15.0.1.0.0",
+    "version": "18.0.1.0.0",
     "category": "Human Resources",
     "author": "Ecosoft, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/hr-expense",
@@ -17,4 +17,5 @@
         "views/hr_expense_view.xml",
     ],
     "installable": True,
+    "maintainers": ["Saran440"],
 }

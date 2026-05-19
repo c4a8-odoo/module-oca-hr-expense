@@ -1,7 +1,9 @@
 # Copyright 2021 Ecosoft <http://ecosoft.co.th>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from datetime import datetime
 
+from odoo import Command
 from odoo.tests.common import TransactionCase
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -26,27 +28,23 @@ class TestExpenseSheetException(TransactionCase):
             "employee_id": self.employee_id.id,
             "name": "My Expense Sheet",
             "expense_line_ids": [
-                (
-                    0,
-                    0,
+                Command.create(
                     {
                         "employee_id": self.employee_id.id,
                         "name": self.product_id_1.name,
                         "product_id": self.product_id_1.id,
                         "quantity": 5.0,
-                        "unit_amount": 500.0,
+                        "price_unit": 500.0,
                         "date": self.date_expense,
                     },
                 ),
-                (
-                    0,
-                    0,
+                Command.create(
                     {
                         "employee_id": self.employee_id.id,
                         "name": self.product_id_2.name,
                         "product_id": self.product_id_2.id,
                         "quantity": 5.0,
-                        "unit_amount": 250.0,
+                        "price_unit": 250.0,
                         "date": self.date_expense,
                     },
                 ),
@@ -85,15 +83,13 @@ class TestExpenseSheetException(TransactionCase):
         self.ex.write(
             {
                 "expense_line_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "employee_id": self.employee_id.id,
                             "name": self.product_id_3.name,
                             "product_id": self.product_id_3.id,
                             "quantity": 2.0,
-                            "unit_amount": 50.0,
+                            "price_unit": 50.0,
                             "date": self.date_expense,
                         },
                     )
@@ -103,7 +99,7 @@ class TestExpenseSheetException(TransactionCase):
 
         # Set ignore exception True  (Done manually by user)
         self.ex.ignore_exception = True
-        self.ex.reset_expense_sheets()
+        self.ex.action_reset_expense_sheets()
         self.assertEqual(self.ex.state, "draft")
         self.assertFalse(self.ex.ignore_exception)
 

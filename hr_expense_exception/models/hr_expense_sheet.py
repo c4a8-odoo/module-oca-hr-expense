@@ -5,8 +5,8 @@ from odoo import api, models
 
 
 class HRExpenseSheet(models.Model):
-    _inherit = ["hr.expense.sheet", "base.exception"]
     _name = "hr.expense.sheet"
+    _inherit = ["hr.expense.sheet", "base.exception"]
     _order = "main_exception_id asc, accounting_date desc, id desc"
 
     @api.model
@@ -41,8 +41,8 @@ class HRExpenseSheet(models.Model):
             return self._popup_exceptions()
         return super().action_submit_sheet()
 
-    def reset_expense_sheets(self):
-        res = super().reset_expense_sheets()
+    def action_reset_expense_sheets(self):
+        res = super().action_reset_expense_sheets()
         for expense in self:
             expense.exception_ids = False
             expense.main_exception_id = False

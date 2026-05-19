@@ -5,8 +5,8 @@ from odoo import api, fields, models
 
 
 class HRExpense(models.Model):
-    _inherit = ["hr.expense", "base.exception.method"]
     _name = "hr.expense"
+    _inherit = ["hr.expense", "base.exception.method"]
 
     ignore_exception = fields.Boolean(
         related="sheet_id.ignore_exception", store=True, string="Ignore Exceptions"
