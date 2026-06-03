@@ -9,7 +9,7 @@
     "license": "AGPL-3",
     "website": "https://github.com/OCA/hr-expense",
     "depends": ["hr_expense", "base_tier_validation"],
-    "data": ["data/ir_config_parameter.xml", "views/hr_expense_sheet_view.xml"],
+    "data": ["views/hr_expense_sheet_view.xml"],
     "installable": True,
     "maintainers": ["ps-tubtim"],
 }
