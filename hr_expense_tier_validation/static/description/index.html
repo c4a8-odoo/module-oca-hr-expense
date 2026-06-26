@@ -391,14 +391,26 @@ tier validation process.</p>
 <p>To configure tier validation for HR expenses:</p>
 <ol class="arabic simple">
 <li>Go to <em>Settings &gt; Technical &gt; Tier Validations &gt; Tier Definition</em></li>
-<li>Create the desired approval tiers for the hr.expense model.</li>
+<li>Set the model to <strong>Expense Report</strong> (<tt class="docutils literal">hr.expense.sheet</tt>).</li>
+<li>Create the desired approval tiers with the appropriate conditions.</li>
 </ol>
-<p>To define exceptions for expense approvals:</p>
+<p>To define exception fields that can still be edited while the expense is
+under or after tier validation:</p>
 <ol class="arabic simple">
-<li>Go to <em>Settings &gt; Technical &gt; System Parameters</em></li>
-<li>Search for “hr_expense.tier_exceptions” in the system parameters.</li>
-<li>Add the necessary fields that should be excluded from tier
-validation.</li>
+<li>Go to <em>Settings &gt; Technical &gt; Tier Validations &gt; Tier Validation
+Exceptions</em></li>
+<li>Create a new exception for model <strong>Expense Report</strong>
+(<tt class="docutils literal">hr.expense.sheet</tt>) or <strong>Expense</strong> (<tt class="docutils literal">hr.expense</tt>):<ul>
+<li><strong>Under Validation</strong> — fields allowed to be modified while the
+expense sheet is in <em>Submitted</em> state and awaiting tier approval.
+Set <em>Allowed to Write Under Validation</em>.</li>
+<li><strong>After Validation</strong> — fields allowed to be modified after the
+expense sheet is fully approved (<em>Approved</em>, <em>Posted</em>, <em>Done</em>). Set
+<em>Allowed to Write After Validation</em>.</li>
+</ul>
+</li>
+<li>Optionally restrict the exception to specific user groups.</li>
+<li>Add the field(s) you want to allow editing.</li>
 </ol>
 </div>
 <div class="section" id="usage">
