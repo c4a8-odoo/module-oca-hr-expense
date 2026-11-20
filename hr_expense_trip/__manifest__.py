@@ -3,7 +3,7 @@
 
 {
     "name": "Expense Trip",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.1001",
     "category": "Human Resources",
     "author": "Odoo Community Association (OCA)",
     "maintainers": ["CRogos"],
